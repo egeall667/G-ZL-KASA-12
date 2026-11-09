@@ -1,0 +1,807 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gizli Kasa 🔐</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: #080b14;
+    color: #e8ecf7;
+    font-family: Arial, sans-serif;
+}
+
+button, input, textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.center-screen {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 420px;
+    padding: 35px;
+    background: #111827;
+    border: 1px solid #263248;
+    border-radius: 20px;
+    box-shadow: 0 20px 70px #0008;
+    text-align: center;
+}
+
+.logo {
+    font-size: 55px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    margin: 10px 0;
+}
+
+.muted {
+    color: #8b97ad;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+input, textarea {
+    width: 100%;
+    background: #080d18;
+    color: white;
+    border: 1px solid #29364c;
+    border-radius: 10px;
+    padding: 13px;
+    outline: none;
+}
+
+input:focus, textarea:focus {
+    border-color: #818cf8;
+}
+
+.login-box input {
+    margin: 18px 0 12px;
+}
+
+.primary {
+    background: #6366f1;
+    color: white;
+    padding: 13px 18px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.primary:hover {
+    background: #4f46e5;
+}
+
+.full {
+    width: 100%;
+}
+
+.error {
+    color: #fb7185;
+    font-size: 14px;
+    margin-top: 12px;
+}
+
+#app {
+    max-width: 1100px;
+    margin: auto;
+    padding: 25px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.header-title {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.secondary {
+    background: #1c2638;
+    color: #dce5f7;
+    padding: 11px 15px;
+    border-radius: 9px;
+}
+
+.secondary:hover {
+    background: #2a3850;
+}
+
+.notice {
+    padding: 14px;
+    border-radius: 10px;
+    background: #111c2d;
+    color: #91a4c4;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 22px;
+}
+
+.panel {
+    background: #111827;
+    border: 1px solid #253147;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.panel h2 {
+    font-size: 18px;
+    margin-top: 0;
+}
+
+.field {
+    margin-bottom: 14px;
+}
+
+.field label {
+    display: block;
+    font-size: 13px;
+    color: #9ba9c1;
+    margin-bottom: 7px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 180px;
+}
+
+#notesList {
+    display: grid;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.note-card {
+    background: #0b1220;
+    border: 1px solid #263248;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.note-card h3 {
+    margin: 0 0 8px;
+    overflow-wrap: anywhere;
+}
+
+.note-preview {
+    color: #9ba9c1;
+    font-size: 13px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    max-height: 75px;
+    overflow: hidden;
+}
+
+.note-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.note-actions button {
+    background: #1c2638;
+    color: #dce5f7;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.note-actions .delete {
+    color: #fb7185;
+}
+
+.empty {
+    text-align: center;
+    padding: 35px 10px;
+    color: #77859e;
+}
+
+#status {
+    color: #86efac;
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+@media (max-width: 750px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    #app {
+        padding: 15px;
+    }
+
+    .login-box {
+        padding: 25px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- GİRİŞ EKRANI -->
+<div id="loginScreen" class="center-screen">
+    <div class="login-box">
+        <div class="logo">🔐</div>
+        <h1>Gizli Kasa</h1>
+        <p id="loginDescription" class="muted">
+            Kişisel bilgilerine erişmek için şifreni gir.
+        </p>
+
+        <form id="loginForm">
+            <input
+                id="password"
+                type="password"
+                placeholder="Kasa şifren"
+                autocomplete="current-password"
+                required
+                minlength="8"
+            >
+
+            <button class="primary full" id="loginButton">
+                Kasayı Aç
+            </button>
+        </form>
+
+        <p id="loginError" class="error"></p>
+        <p class="muted" style="font-size:12px">
+            Bilgilerin bu tarayıcıda şifrelenmiş olarak saklanır.
+        </p>
+    </div>
+</div>
+
+<!-- ANA UYGULAMA -->
+<div id="app" class="hidden">
+
+    <header>
+        <div>
+            <div class="header-title">🔐 Gizli Kasa</div>
+            <div class="muted">Sana özel kişisel bilgi merkezi</div>
+        </div>
+
+        <div class="header-buttons">
+            <button class="secondary" id="lockButton">
+                🔒 Kilitle
+            </button>
+        </div>
+    </header>
+
+    <div class="notice">
+        🛡️ Notların AES-GCM ile şifrelenir.
+        Şifren olmadan kayıtlı içerik okunamaz.
+    </div>
+
+    <div class="layout">
+
+        <!-- NOT EKLEME -->
+        <section class="panel">
+            <h2 id="editorTitle">📝 Yeni Not</h2>
+
+            <form id="noteForm">
+                <div class="field">
+                    <label for="noteTitle">Not başlığı</label>
+                    <input
+                        id="noteTitle"
+                        maxlength="120"
+                        placeholder="Örn: Önemli bilgiler"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="noteContent">Not içeriği</label>
+                    <textarea
+                        id="noteContent"
+                        maxlength="50000"
+                        placeholder="Bilgilerini buraya yaz..."
+                        required
+                    ></textarea>
+                </div>
+
+                <button class="primary full" type="submit">
+                    💾 Notu Kaydet
+                </button>
+
+                <button
+                    class="secondary full hidden"
+                    type="button"
+                    id="cancelEdit"
+                    style="margin-top:10px"
+                >
+                    Düzenlemeyi İptal Et
+                </button>
+
+                <div id="status"></div>
+            </form>
+        </section>
+
+        <!-- KAYITLI NOTLAR -->
+        <section class="panel">
+            <h2>📚 Kayıtlı Notların</h2>
+
+            <input
+                id="search"
+                placeholder="🔎 Notlarında ara..."
+                style="margin-bottom:10px"
+            >
+
+            <div id="notesList"></div>
+        </section>
+
+    </div>
+</div>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+const STORAGE_KEY = "private_vault_encrypted_v1";
+const META_KEY = "private_vault_meta_v1";
+
+let vaultKey = null;
+let notes = [];
+let editingId = null;
+let autoLockTimer = null;
+
+// Güvenli rastgele byte üret
+function randomBytes(length) {
+    return crypto.getRandomValues(new Uint8Array(length));
+}
+
+// ArrayBuffer / Uint8Array -> Base64
+function toBase64(bytes) {
+    let binary = "";
+    bytes.forEach(byte => binary += String.fromCharCode(byte));
+    return btoa(binary);
+}
+
+// Base64 -> Uint8Array
+function fromBase64(value) {
+    const binary = atob(value);
+    const bytes = new Uint8Array(binary.length);
+
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+
+    return bytes;
+}
+
+// Şifreyi PBKDF2 ile AES anahtarına dönüştür
+async function deriveKey(password, salt) {
+    const material = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(password),
+        "PBKDF2",
+        false,
+        ["deriveKey"]
+    );
+
+    return crypto.subtle.deriveKey(
+        {
+            name: "PBKDF2",
+            salt: salt,
+            iterations: 600000,
+            hash: "SHA-256"
+        },
+        material,
+        {
+            name: "AES-GCM",
+            length: 256
+        },
+        false,
+        ["encrypt", "decrypt"]
+    );
+}
+
+// JSON verisini AES-GCM ile şifrele
+async function encryptData(data, key) {
+    const iv = randomBytes(12);
+    const encoded = new TextEncoder().encode(
+        JSON.stringify(data)
+    );
+
+    const encrypted = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv: iv },
+        key,
+        encoded
+    );
+
+    return {
+        iv: toBase64(iv),
+        data: toBase64(new Uint8Array(encrypted))
+    };
+}
+
+// Şifreli veriyi çöz
+async function decryptData(record, key) {
+    const decrypted = await crypto.subtle.decrypt(
+        {
+            name: "AES-GCM",
+            iv: fromBase64(record.iv)
+        },
+        key,
+        fromBase64(record.data)
+    );
+
+    return JSON.parse(
+        new TextDecoder().decode(decrypted)
+    );
+}
+
+// Meta bilgisi
+function getMeta() {
+    const raw = localStorage.getItem(META_KEY);
+    return raw ? JSON.parse(raw) : null;
+}
+
+// Yeni kasa oluştur
+async function createVault(password) {
+    const salt = randomBytes(16);
+    const key = await deriveKey(password, salt);
+
+    const check = await encryptData(
+        { verification: "PRIVATE_VAULT_OK" },
+        key
+    );
+
+    localStorage.setItem(
+        META_KEY,
+        JSON.stringify({
+            salt: toBase64(salt),
+            check: check,
+            version: 1
+        })
+    );
+
+    localStorage.setItem(STORAGE_KEY, "");
+
+    vaultKey = key;
+    notes = [];
+}
+
+// Kasayı aç
+async function unlockVault(password) {
+    const meta = getMeta();
+
+    if (!meta) {
+        await createVault(password);
+        return;
+    }
+
+    const key = await deriveKey(
+        password,
+        fromBase64(meta.salt)
+    );
+
+    const verification = await decryptData(
+        meta.check,
+        key
+    );
+
+    if (verification.verification !== "PRIVATE_VAULT_OK") {
+        throw new Error("Şifre yanlış.");
+    }
+
+    vaultKey = key;
+
+    const raw = localStorage.getItem(STORAGE_KEY);
+
+    if (raw) {
+        const encrypted = JSON.parse(raw);
+        notes = await decryptData(encrypted, key);
+
+        if (!Array.isArray(notes)) {
+            throw new Error("Kasa verisi geçersiz.");
+        }
+    } else {
+        notes = [];
+    }
+}
+
+// Notları şifreleyerek kaydet
+async function saveNotes() {
+    if (!vaultKey) {
+        throw new Error("Kasa kilitli.");
+    }
+
+    const encrypted = await encryptData(notes, vaultKey);
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(encrypted)
+    );
+}
+
+// Güvenli kilitleme
+function lockVault() {
+    vaultKey = null;
+    notes = [];
+    editingId = null;
+
+    clearTimeout(autoLockTimer);
+
+    $("app").classList.add("hidden");
+    $("loginScreen").classList.remove("hidden");
+
+    $("password").value = "";
+    $("loginError").textContent = "";
+    $("loginButton").textContent = "Kasayı Aç";
+    $("loginDescription").textContent =
+        "Kişisel bilgilerine erişmek için şifreni gir.";
+
+    resetEditor();
+}
+
+// Otomatik kilitleme: 5 dakika
+function resetAutoLock() {
+    clearTimeout(autoLockTimer);
+
+    if (vaultKey) {
+        autoLockTimer = setTimeout(
+            lockVault,
+            5 * 60 * 1000
+        );
+    }
+}
+
+// Giriş
+$("loginForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const password = $("password").value;
+    const meta = getMeta();
+
+    if (password.length < 8) {
+        $("loginError").textContent =
+            "Şifre en az 8 karakter olmalı.";
+        return;
+    }
+
+    if (!meta && password.length < 12) {
+        $("loginError").textContent =
+            "İlk şifren en az 12 karakter olsun.";
+        return;
+    }
+
+    $("loginButton").disabled = true;
+    $("loginButton").textContent = "Açılıyor...";
+    $("loginError").textContent = "";
+
+    try {
+        await unlockVault(password);
+
+        $("loginScreen").classList.add("hidden");
+        $("app").classList.remove("hidden");
+
+        $("password").value = "";
+
+        renderNotes();
+        resetAutoLock();
+
+    } catch (error) {
+        vaultKey = null;
+
+        $("loginError").textContent =
+            "Şifre yanlış veya kasa verisi okunamadı.";
+
+    } finally {
+        $("loginButton").disabled = false;
+        $("loginButton").textContent = "Kasayı Aç";
+    }
+});
+
+// Not ekle / düzenle
+$("noteForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (!vaultKey) return;
+
+    const title = $("noteTitle").value.trim();
+    const content = $("noteContent").value.trim();
+
+    if (!title || !content) return;
+
+    const now = new Date().toISOString();
+
+    if (editingId) {
+        const note = notes.find(n => n.id === editingId);
+
+        if (note) {
+            note.title = title;
+            note.content = content;
+            note.updated = now;
+        }
+    } else {
+        notes.unshift({
+            id: crypto.randomUUID(),
+            title: title,
+            content: content,
+            created: now,
+            updated: now
+        });
+    }
+
+    try {
+        await saveNotes();
+
+        $("status").textContent = "✅ Şifreli olarak kaydedildi.";
+        resetEditor();
+        renderNotes();
+
+    } catch (error) {
+        $("status").textContent =
+            "Kaydetme hatası: Tarayıcı depolama alanını kontrol et.";
+    }
+
+    resetAutoLock();
+});
+
+// Not listesini göster
+function renderNotes() {
+    const list = $("notesList");
+    const search = $("search").value.toLowerCase();
+
+    list.innerHTML = "";
+
+    const filtered = notes.filter(note =>
+        note.title.toLowerCase().includes(search) ||
+        note.content.toLowerCase().includes(search)
+    );
+
+    if (filtered.length === 0) {
+        list.innerHTML =
+            '<div class="empty">Henüz not yok.<br>İlk notunu ekle!</div>';
+        return;
+    }
+
+    filtered.forEach(note => {
+        const card = document.createElement("div");
+        card.className = "note-card";
+
+        const title = document.createElement("h3");
+        title.textContent = note.title;
+
+        const preview = document.createElement("div");
+        preview.className = "note-preview";
+        preview.textContent = note.content;
+
+        const actions = document.createElement("div");
+        actions.className = "note-actions";
+
+        const edit = document.createElement("button");
+        edit.textContent = "✏️ Düzenle";
+        edit.addEventListener("click", () => editNote(note.id));
+
+        const remove = document.createElement("button");
+        remove.textContent = "🗑️ Sil";
+        remove.className = "delete";
+        remove.addEventListener("click", () => deleteNote(note.id));
+
+        actions.append(edit, remove);
+        card.append(title, preview, actions);
+        list.appendChild(card);
+    });
+}
+
+// Düzenleme
+function editNote(id) {
+    const note = notes.find(n => n.id === id);
+    if (!note) return;
+
+    editingId = id;
+
+    $("noteTitle").value = note.title;
+    $("noteContent").value = note.content;
+    $("editorTitle").textContent = "✏️ Notu Düzenle";
+    $("cancelEdit").classList.remove("hidden");
+    $("status").textContent = "";
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// Düzenlemeyi sıfırla
+function resetEditor() {
+    editingId = null;
+
+    $("noteForm").reset();
+    $("editorTitle").textContent = "📝 Yeni Not";
+    $("cancelEdit").classList.add("hidden");
+    $("status").textContent = "";
+}
+
+$("cancelEdit").addEventListener("click", resetEditor);
+
+// Silme
+async function deleteNote(id) {
+    const note = notes.find(n => n.id === id);
+    if (!note) return;
+
+    if (!confirm(`"${note.title}" adlı not silinsin mi?`)) {
+        return;
+    }
+
+    notes = notes.filter(n => n.id !== id);
+
+    if (editingId === id) {
+        resetEditor();
+    }
+
+    try {
+        await saveNotes();
+        renderNotes();
+        $("status").textContent = "🗑️ Not silindi.";
+    } catch {
+        alert("Not silinemedi.");
+    }
+
+    resetAutoLock();
+}
+
+// Arama
+$("search").addEventListener("input", renderNotes);
+
+// Kilitle
+$("lockButton").addEventListener("click", lockVault);
+
+// Kullanıcı etkinliğinde otomatik kilidi yenile
+["click", "keydown", "mousemove", "touchstart"].forEach(event => {
+    document.addEventListener(event, () => {
+        if (vaultKey) resetAutoLock();
+    }, { passive: true });
+});
+
+// İlk açılış ekranını ayarla
+if (!getMeta()) {
+    $("loginDescription").textContent =
+        "İlk kullanım! Kendine özel güçlü bir şifre oluştur.";
+    $("loginButton").textContent = "Kasayı Oluştur";
+    $("password").placeholder = "Yeni şifren (en az 12 karakter)";
+    $("password").autocomplete = "new-password";
+}
+</script>
+
+</body>
+</html>
